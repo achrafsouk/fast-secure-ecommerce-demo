@@ -86,6 +86,12 @@ Load the website in your browser, and open the Chrome developer tools to underst
 | **Waiting room** | You will activate a waiting room for the cart page. Only logged premium users can actually access the cart page, the rest are showed the waiting room. To do this, add the following entry in the deployed KeyValueStore in the CloudFront console. Log with default user (user: Joud, pwd: demo) and verify that you have access to the cart page. Register a new non-premium user in a different browser, and verify that they do not have access to the cart. <br/> Key: ```/cart``` <br/> Value: ```{ "rules": { "waitroom": { "location": "/waitroom" } } }```|
 | **Speculation API** | The home page uses the specualtion rules API of the browser, to prerender product pages on whic the mouse hovers for over 200 ms. Go to the speculation rules tab in the Chrome developer tools, and check how a product page is pre-rendered when the mouse hovers over  |
 
+
+# Demo
+
+[![](https://img.youtube.com/vi/nGJ5tmhGN74/0.jpg)](https://youtu.be/nGJ5tmhGN74?list=PLhr1KZpdzukfptGXeVnCpEIMa9JXJGdlb&t=475)
+
+
 # Request flow
 
 ![](docs-images/request-flow.png)
