@@ -129,7 +129,7 @@ export const wafRules = [
       ManagedRuleGroupStatement: {
         VendorName: "AWS",
         Name: "AWSManagedRulesBotControlRuleSet",
-        Version: "Version_3.0",
+        Version: "Version_3.1",
         ManagedRuleGroupConfigs: [
           {
             AWSManagedRulesBotControlRuleSet: { InspectionLevel: "TARGETED" }
@@ -157,6 +157,78 @@ export const wafRules = [
               Block: {}
             },
             Name: "TGT_TokenReuseIpLow"
+          },
+          {
+            ActionToUse: {
+              Block: {}
+            },
+            Name: "TGT_TokenReuseIpMedium"
+          },
+          {
+            ActionToUse: {
+              Block: {}
+            },
+            Name: "TGT_TokenReuseIpHigh"
+          },
+          {
+            ActionToUse: {
+              Block: {}
+            },
+            Name: "TGT_TokenReuseCountryLow"
+          },
+          {
+            ActionToUse: {
+              Block: {}
+            },
+            Name: "TGT_TokenReuseCountryMedium"
+          },
+          {
+            ActionToUse: {
+              Block: {}
+            },
+            Name: "TGT_TokenReuseCountryHigh"
+          },
+            {
+            ActionToUse: {
+              Block: {}
+            },
+            Name: "TGT_TokenReuseAsnLow"
+          },
+          {
+            ActionToUse: {
+              Block: {}
+            },
+            Name: "TGT_TokenReuseAsnMedium"
+          },
+          {
+            ActionToUse: {
+              Block: {}
+            },
+            Name: "TGT_TokenReuseAsnHigh"
+          },
+          {
+            ActionToUse: {
+              Challenge: {}
+            },
+            Name: "TGT_VolumetricSession"
+          },
+          {
+            ActionToUse: {
+              Challenge: {}
+            },
+            Name: "TGT_VolumetricSessionMaximum"
+          },
+          {
+            ActionToUse: {
+              Challenge: {}
+            },
+            Name: "TGT_ML_CoordinatedActivityMedium"
+          },
+          {
+            ActionToUse: {
+              Challenge: {}
+            },
+            Name: "TGT_ML_CoordinatedActivityHigh"
           },
         ],
       },
