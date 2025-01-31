@@ -2,13 +2,15 @@
 
 ## Scenarios  
 
-* Add an observability option for CloudFront: CloudWatch or real time logs
-* Demonstrate an Lambda URL based API
-* Graceful failover
-* Report false positives 
-* Display Server timing headers in CloudWatch RUM
-* Include CAPTCHA in registration worklflow
-* Block unexpected API paths
+1. VPC origin
+1. Origin Selection
+1. Add an observability option for CloudFront: CloudWatch or real time logs
+1. Demonstrate an Lambda URL based API
+1. Graceful failover
+1. Report false positives 
+1. Display Server timing headers in CloudWatch RUM
+1. Include CAPTCHA in registration worklflow
+1. Block unexpected API paths
 
 ## App code
 * Add more registration data (e.g. First and Last name)
@@ -17,10 +19,8 @@
 
 ## Infra code
 * Add CSP header
-* Enforce origin cloaking at L7
 * Move static content to own bucket with appropriate caching behavior
-* Consider moving backed in Lambda with Lamdba Adapter layer
 * Config file change to work with CDK output
 * Allow the option for custom domain in CDK input parameters
-* Update WAFWebACL on every CDK change
+* Update WAF WebACL on every CDK change
 * More holistic Fraud prevention on the registration (e.g. custom solutions)
