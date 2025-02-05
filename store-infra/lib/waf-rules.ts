@@ -55,12 +55,12 @@ export const wafRules = [
     },
   },
   {
-    Name: "CUSTOM_rate_limit_IP_400",
+    Name: "CUSTOM_rate_limit_IP",
     Priority: 4,
     Statement: {
       RateBasedStatement: {
         AggregateKeyType: "IP",
-        Limit: 400,
+        Limit: 80,
         EvaluationWindowSec: 60
       },
     },
