@@ -60,7 +60,7 @@ export const wafRules = [
     Statement: {
       RateBasedStatement: {
         AggregateKeyType: "IP",
-        Limit: 80,
+        Limit: 200,
         EvaluationWindowSec: 60
       },
     },
