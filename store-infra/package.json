@@ -5,7 +5,7 @@
     "store-infra": "bin/store-infra.js"
   },
   "scripts": {
-    "install": "npm install sharp --cpu=x64 --os=linux --libc=glibc --prefix functions/image-processing-lambda",
+    "install": "npm install sharp --include=optional --cpu=x64 --os=linux --libc=glibc --prefix functions/image-processing-lambda",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
